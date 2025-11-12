@@ -11,6 +11,8 @@ echo "The current Temperature of $city: $obs_temp"
 
 fc_temp=$(head -23 weather_report | tail -1 | grep '°.' | cut -d 'C' -f2 | grep -Eo -e '-?[[:digit:]].*')
 
+echo "The forecasted temperature for noon tomorrow for $city : $fc_temp C"
+
 #Assign Country and City to variable TZ
 TZ='Canada/Surrey'
 
