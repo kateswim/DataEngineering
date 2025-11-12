@@ -1,11 +1,20 @@
 #! /bin/bash
 
-yesterday_fc=$(tail -2 rx_poc.log | head -1 | cut -d ' ' -f5 | grep -oE '^[0-9]+')
+# Check if log file exists and has at least 2 lines
+if [ ! -f rx_poc.log ] || [ $(wc -l < rx_poc.log) -lt 2 ]; then
+    echo "Error: rx_poc.log needs at least 2 entries to calculate forecast accuracy"
+    echo "Please run rx_pox.sh at least twice to generate forecast data"
+    exit 1
+fi
+
+# Extract forecast from yesterday (field 6) and today's actual temp (field 4)
+yesterday_fc=$(tail -2 rx_poc.log | head -1 | cut -d ' ' -f6 | grep -oE '^[0-9]+')
 today_temp=$(tail -1 rx_poc.log | cut -d ' ' -f4 | grep -oE '^[0-9]+')
 
 # Check if we got valid numbers
 if [ -z "$yesterday_fc" ] || [ -z "$today_temp" ]; then
     echo "Error: Could not extract temperature values from rx_poc.log"
+    echo "Yesterday forecast: '$yesterday_fc', Today temp: '$today_temp'"
     exit 1
 fi
 
