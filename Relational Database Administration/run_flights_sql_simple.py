@@ -11,10 +11,10 @@ from pathlib import Path
 
 # ---------- Connection settings ----------
 # Update these values to match your PostgreSQL setup
-PG_HOST = "172.21.241.152"
+PG_HOST = "localhost"
 PG_PORT = "5432"
-PG_USER = "postgres"
-PG_PASSWORD = "WrFtl2aiBchKuZgVQKU3UrN4"
+PG_USER = "katehoncharova"  # Your macOS username (PostgreSQL user)
+PG_PASSWORD = ""  # No password needed for local PostgreSQL
 
 def run_sql_file_with_psql(sql_file_path):
     """
@@ -27,16 +27,19 @@ def run_sql_file_with_psql(sql_file_path):
         print(f"❌ Error: File {sql_file_path} not found!")
         return False
     
-    # Set PGPASSWORD environment variable for password authentication
+    # Set PGPASSWORD environment variable for password authentication (only if password is provided)
     env = dict(os.environ)
-    env['PGPASSWORD'] = PG_PASSWORD
+    if PG_PASSWORD:
+        env['PGPASSWORD'] = PG_PASSWORD
     
     # Build psql command
+    # Connect to 'postgres' database first (flights.sql will create 'demo' database)
     psql_cmd = [
         'psql',
         '-h', PG_HOST,
         '-p', PG_PORT,
         '-U', PG_USER,
+        '-d', 'postgres',  # Connect to default postgres database
         '-f', str(sql_file)
     ]
     
@@ -79,11 +82,7 @@ def run_sql_file_with_psql(sql_file_path):
 if __name__ == "__main__":
     import os
     
-    # Check if password is set
-    if PG_PASSWORD == "your_password_here":
-        print("⚠️  Please update PG_PASSWORD in this script!")
-        print("   Edit this file and set PG_PASSWORD to your PostgreSQL password.")
-        sys.exit(1)
+    # Password check removed - empty password is OK for local PostgreSQL
     
     # Get SQL file path
     if len(sys.argv) > 1:
